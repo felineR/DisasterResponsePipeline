@@ -3,6 +3,11 @@ import sys
 
 def load_data(messages_filepath, categories_filepath):
     
+    '''
+    Takes in two paths to (1) messages file and (2) categories file, loads both files, 
+    merges the two dataframes based on id column and returns the merged dataframe
+    '''
+    
     import pandas as pd
     
     # Read in csv files for messages and categories
@@ -18,14 +23,19 @@ def load_data(messages_filepath, categories_filepath):
 
 def clean_data(df):
     
+    '''
+    Takes in one dataframe consisting of messages and their categories,
+    expands, cleans and transforms the categories column, and removes duplicates.
+    Returns cleaned dataframe consisting of messages and their categories.
+    '''
+    
     import pandas as pd
     
     # Make each category a separate column
     categories = df["categories"].str.split(";", expand=True)
     
     # Rename all 36 category columns
-    extract_category = lambda cat: cat[0:-2]
-    categories.columns = categories.iloc[0].apply(func=extract_category)
+    categories.columns = categories.iloc[0].apply(func=lambda cat: cat[0:-2])
 
     # Clean and convert all category columns to numeric
     for column in categories:
@@ -34,6 +44,8 @@ def clean_data(df):
     # Merge message data and expanded category columns
     df.drop(columns="categories", axis=1, inplace=True)
     df = pd.concat([df, categories], axis=1)
+    
+    # Remove duplicates
     df = df[~(df.duplicated(keep='first'))]
     
     print("Cleaning completed")
@@ -41,6 +53,8 @@ def clean_data(df):
 
 
 def save_data(df, database_filename):
+    
+    ''' Takes in one dataframe and one database filename, and saves dataframe into specified database.'''
     
     import sqlite3
     from sqlalchemy import create_engine
@@ -54,6 +68,12 @@ def save_data(df, database_filename):
 
 
 def main():
+    
+    '''
+    Calls functions load_data, clean_data, and save_data and prints out progess messages as well as success message.
+    Prints error message if statement does not include all three neccessary filepaths (messages, categories, database). 
+    '''
+    
     if len(sys.argv) == 4:
 
         messages_filepath, categories_filepath, database_filepath = sys.argv[1:]
