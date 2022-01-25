@@ -37,10 +37,11 @@ def clean_data(df):
     # Rename all 36 category columns
     categories.columns = categories.iloc[0].apply(func=lambda cat: cat[0:-2])
 
-    # Clean and convert all category columns to numeric
+    # Clean and convert all category columns to binary numeric (allowed values: 0 and 1)
     for column in categories:
         categories[column] = pd.to_numeric(categories[column].str[-1:])
-        
+        categories.drop(axis=0, index = categories.loc[categories[column] == 2].index, inplace=True)
+       
     # Merge message data and expanded category columns
     df.drop(columns="categories", axis=1, inplace=True)
     df = pd.concat([df, categories], axis=1)
