@@ -24,6 +24,21 @@ Files in the repository:
 |- classifier.pkl  # saved model 
 - README.md
 
+How to run the ETL pipeline:
+- Open a new terminal window. Use terminal commands to navigate inside the data folder containing the process_data.py file.
+- Type in the command line: python process_data.py disaster_messages.csv disaster_categories.csv
+
+How to run the Machine Learning pipeline:
+- Open a new terminal window. Use terminal commands to navigate inside the models folder containing the train_classifier.py file.
+- Type in the command line: python train_classifier.py ../data/DisasterResponse.db classifier.pkl
+
+How to run the web application:
+- Open a new terminal window. Use terminal commands to navigate inside the app folder containing the run.py file.
+- Type in the command line: python run.py
+- Open another Terminal Window. Type: env|grep WORK
+- In a new web browser window, type in the following: https://SPACEID-3001.SPACEDOMAIN 
+   where SPACEID and SPACEDOMAIN are the variables retrieved from the second terminal window.
+
 Python libraries used:
 - sys
 - pandas
