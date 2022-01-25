@@ -26,7 +26,7 @@ Files in the repository:
 
 How to run the ETL pipeline:
 - Open a new terminal window. Use terminal commands to navigate inside the data folder containing the process_data.py file.
-- Type in the command line: python process_data.py disaster_messages.csv disaster_categories.csv
+- Type in the command line: python process_data.py disaster_messages.csv disaster_categories.csv DisasterResponse.db
 
 How to run the Machine Learning pipeline:
 - Open a new terminal window. Use terminal commands to navigate inside the models folder containing the train_classifier.py file.
