@@ -14,16 +14,41 @@ from sqlalchemy import create_engine
 
 app = Flask(__name__)
 
-def tokenize(text):
-    tokens = word_tokenize(text)
-    lemmatizer = WordNetLemmatizer()
+def tokenize(text_message):
+    
+    '''Takes in text message, and cleans, tokenizes, lemmes and stemmes it. Returns preprocessed text_message as list of tokens. '''
+    
+    # import libraries
+    import re
+    
+    import nltk
+    nltk.download('punkt', quiet=True)
+    nltk.download('stopwords', quiet=True)
+    nltk.download('wordnet', quiet=True)
+    from nltk import word_tokenize
+    from nltk.corpus import stopwords
+    from nltk.stem.porter import PorterStemmer
+    from nltk.stem.wordnet import WordNetLemmatizer
+    
+    # Convert to all lower case letters
+    text_message.lower()
 
-    clean_tokens = []
-    for tok in tokens:
-        clean_tok = lemmatizer.lemmatize(tok).lower().strip()
-        clean_tokens.append(clean_tok)
+    # Replace URLs within message with a placeholder
+    url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+    text_message = re.sub(url_regex, "urlplaceholder", text_message)
 
-    return clean_tokens
+    # Remove punctuation from message
+    text_message = re.sub('[^a-zA-Z0-9]', " ", text_message)
+    
+    # Tokenzize message, remove stop words as well as leading and trailing white spaces
+    tokens = word_tokenize(text_message)
+    tokens = [t.strip() for t in tokens if t not in stopwords.words("english")]
+
+    # Stemming and lemmatizing tokens
+    tokens = [PorterStemmer().stem(t) for t in tokens]
+    tokens = [WordNetLemmatizer().lemmatize(t) for t in tokens]
+    
+    return tokens
 
 # load data
 engine = create_engine('sqlite:///../data/DisasterResponse.db')
@@ -37,6 +62,8 @@ model = joblib.load("../models/classifier.pkl")
 @app.route('/')
 @app.route('/index')
 def index():
+    
+    '''Extracts data and visualizes it, receives messages as user input for model'''
     
     # extract data needed for visuals 
     # (1) message genre    
@@ -91,7 +118,7 @@ def index():
                 'xaxis': {
                     'title': "Related"
                 }
-            }'
+            }
         },
         {
             'data': [
@@ -124,6 +151,9 @@ def index():
 # web page that handles user query and displays model results
 @app.route('/go')
 def go():
+    
+    '''Classifies user's message using pretrained machine learning model'''
+    
     # save user input in query
     query = request.args.get('query', '') 
 
@@ -140,6 +170,9 @@ def go():
 
 
 def main():
+    
+    '''Runs Web Application Disaster Response'''
+    
     app.run(host='0.0.0.0', port=3001, debug=True)
 
 
